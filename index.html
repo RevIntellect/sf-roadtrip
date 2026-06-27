@@ -72,9 +72,10 @@
     font-family:"Spline Sans Mono",monospace;font-size:12.5px;letter-spacing:.2em;
     text-transform:uppercase;color:#e6a08c;margin:0 0 16px;font-weight:600;
   }
-  .notes ul{margin:0;padding:0;list-style:none;display:grid;gap:13px;}
+  .notes ul{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:repeat(2,1fr);gap:15px 32px;}
   .notes li{display:flex;gap:13px;font-size:16px;line-height:1.5;}
   .notes li span{color:#e6a08c;font-family:"Spline Sans Mono",monospace;font-size:13px;padding-top:3px;flex:none;}
+  .notes li b{color:#fff;font-weight:600;}
 
   /* ---------- legs ---------- */
   .leg{padding:54px 0 8px;}
@@ -248,6 +249,7 @@
     .meta-strip{gap:7px 18px;margin-top:22px;}
     .notes{padding:22px 19px;}
     .notes li{font-size:15.5px;}
+    .notes ul{grid-template-columns:1fr;gap:13px;}
     .leg{padding:40px 0 8px;}
     .photo{height:clamp(168px,46vw,220px);}
     .card p{font-size:16px;}
@@ -276,10 +278,12 @@
   <div class="notes rv">
     <h2>Before you go — field notes</h2>
     <ul>
-      <li><span>01</span><div>Save the Golden Gate for a clear window; fog usually burns off by late morning. Parking there is scarce and break-ins are common, so rideshare in.</div></li>
-      <li><span>02</span><div>At Lombard, walk the pedestrian stairs beside the crooked block. The car queue is slow and you see less from inside.</div></li>
-      <li><span>03</span><div>Swan Oyster Depot (optional, Day 2) is lunch-only with a 2:30 close, cash only, and shut on Sundays. Treat it as a priority or skip it.</div></li>
-      <li><span>04</span><div>The far-north redwoods are a haul — about 170 miles up the coast from the city — so plan a night on the way rather than driving it in one push. Short on time? Muir Woods, just over the Golden Gate, has the same giant redwoods a fifteenth of the distance away.</div></li>
+      <li><span>01</span><div><b>Time the bridge.</b> Save the Golden Gate for a clear window — fog usually burns off by late morning. Parking is scarce and break-ins common, so rideshare in.</div></li>
+      <li><span>02</span><div><b>Dress in layers.</b> Summer is the cool, foggy season here — wind off the Pacific keeps the western neighborhoods chilly even in July. Locals call the fog Karl. Bring a jacket.</div></li>
+      <li><span>03</span><div><b>Getting around.</b> Skip driving downtown — parking is scarce and pricey. Tap a phone or a Clipper card on Muni and BART; cable cars are a flat $8, exact cash or the MuniMobile app.</div></li>
+      <li><span>04</span><div><b>Skip the Lombard queue.</b> Walk the pedestrian stairs beside the crooked block; the car line is slow and you see less from inside.</div></li>
+      <li><span>05</span><div><b>Swan Oyster Depot.</b> Lunch-only with a 2:30 close, cash only, and shut Sundays (optional, Day 2). Make it a priority or skip it.</div></li>
+      <li><span>06</span><div><b>The drive north.</b> The far-north redwoods are ~170 miles up the coast, so plan a night on the way. Short on time? Muir Woods, just over the Golden Gate, has the same giant redwoods a fifteenth of the distance away.</div></li>
     </ul>
   </div>
 </section>
