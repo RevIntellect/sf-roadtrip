@@ -414,7 +414,7 @@
       </div>
     </div>
 
-  <div class="aside rv">
+  <div class="aside rv" id="swan-aside" data-mapextra="swan">
     <img loading="lazy" decoding="async" class="aside-img" src="assets/road-trip-09.jpg" alt="The Swan Oyster Depot storefront window with its painted sign and skeleton display">
     <span class="tag">Optional · Lunch</span>
     <p>Swan Oyster Depot — a century-old seafood counter on Polk Street, a short detour inland from Lombard. Eighteen stools, cash only, lunch until 2:30, closed Sundays. Go early, around 11, to beat the line before the kitchen closes. <a href="https://maps.google.com/?cid=16765858646085057492" target="_blank" rel="noopener">Open in Maps ↗</a></p>
@@ -479,7 +479,7 @@
     <p class="leg-sub">Out of the city and up the coast, then the long push into the redwoods.</p>
   </div>
 
-  <div class="legnote rv" style="border-left-color:var(--redwood);">
+  <div class="legnote rv" id="altroute" style="border-left-color:var(--redwood);">
     <figure style="margin:0 0 14px;">
       <img src="assets/muir-woods.jpg" alt="Inside a hollowed old-growth redwood at Muir Woods, sunbeams filtering through the canopy" loading="lazy" width="1400" height="1867" style="display:block;width:100%;height:clamp(220px,42vw,380px);object-fit:cover;border-radius:9px;background:var(--redwood-fog);">
       <figcaption style="font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--haze);margin-top:7px;">Inside a Muir Woods redwood · photo ©AREAD</figcaption>
@@ -596,6 +596,7 @@
         var d=el.querySelector('.mk'); if(d)d.classList.toggle('active',j===i);
         if(j===i&&el.style)el.style.zIndex=1000;else if(el.style)el.style.zIndex='';
       });
+      clearExtras();
       var s=S[i];
       if(cap)cap.innerHTML='<b>'+s.name+'</b><span>Day '+s.d+' &middot; Stop '+s.n+'</span>';
       if(reduce)map.setView([s.lat,s.lng],14);else map.flyTo([s.lat,s.lng],14,{duration:0.8});
@@ -617,38 +618,51 @@
     },{rootMargin:'-45% 0px -45% 0px',threshold:0});
     cards.forEach(function(c){io.observe(c);});
 
-    // --- Extra, non-sequence points you can fly to from the prose ---
+    // --- Optional points wired into the same map interactions as the numbered stops ---
     var EXTRA={
-      muir:{name:"Muir Woods",lat:37.8912,lng:-122.5719,zoom:12,cls:'alt',sub:'Stay-close alternative'},
-      jenner:{name:"Jenner",lat:38.4499,lng:-123.1138,zoom:11,cls:'alt',sub:'Stay-close alternative'},
-      swan:{name:"Swan Oyster Depot",lat:37.7917,lng:-122.4205,zoom:15,cls:'tip',sub:'Lunch tip · Day 2'}
+      muir:{name:"Muir Woods",lat:37.8912,lng:-122.5719,zoom:12,cls:'alt',sub:'Stay-close alternative',anchor:'#altroute'},
+      jenner:{name:"Jenner",lat:38.4499,lng:-123.1138,zoom:11,cls:'alt',sub:'Stay-close alternative',anchor:'#altroute'},
+      swan:{name:"Swan Oyster Depot",lat:37.7917,lng:-122.4205,zoom:15,cls:'tip',sub:'Optional · Day 2 lunch',anchor:'#swan-aside'}
     };
     // dashed line tracing the alternate route: bridge -> Muir Woods -> Jenner
     L.polyline([[37.8077973,-122.4748473],[EXTRA.muir.lat,EXTRA.muir.lng],[EXTRA.jenner.lat,EXTRA.jenner.lng]],
       {color:'#2C5D5C',weight:2,dashArray:'2 7',opacity:0.4}).addTo(map);
     var xkeys=Object.keys(EXTRA), xmarkers={};
+    function clearExtras(){xkeys.forEach(function(j){var el=xmarkers[j]&&xmarkers[j].getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.remove('active');}});}
+    // activate an extra point (map assumed on screen): highlight marker, caption, fly
+    function activateExtra(k){
+      var e=EXTRA[k]; if(!e)return;
+      markers.forEach(function(m){var el=m.getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.remove('active');}});
+      xkeys.forEach(function(j){var el=xmarkers[j].getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.toggle('active',j===k);}});
+      active=-1;
+      if(cap)cap.innerHTML='<b>'+e.name+'</b><span>'+e.sub+'</span>';
+      map.invalidateSize();
+      if(reduce)map.setView([e.lat,e.lng],e.zoom);else map.flyTo([e.lat,e.lng],e.zoom,{duration:0.9});
+    }
+    // from prose that may sit above the map: bring the map into view first
+    function showExtra(k){
+      var mapEl=document.getElementById('map'),r=mapEl.getBoundingClientRect();
+      var vis=r.top<window.innerHeight*0.9 && r.bottom>window.innerHeight*0.1;
+      if(vis){activateExtra(k);}else{var sc=document.getElementById('scrolly');if(sc)sc.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(function(){activateExtra(k);},reduce?0:560);}
+    }
     xkeys.forEach(function(k){
       var e=EXTRA[k];
       var mk=L.marker([e.lat,e.lng],{icon:L.divIcon({className:'mkico',
         html:'<div class="mk '+e.cls+'">'+e.name.charAt(0)+'</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map);
       mk.bindTooltip(e.name,{direction:'top',offset:[0,-12]});
       var el=mk.getElement(); if(el){el.setAttribute('role','button');el.setAttribute('aria-label','Show '+e.name+' on the map');}
+      mk.on('click',function(){var t=e.anchor&&document.querySelector(e.anchor);if(t)t.scrollIntoView({behavior:reduce?'auto':'smooth',block:'center'});activateExtra(k);});
       xmarkers[k]=mk;
     });
-    function showExtra(k){
-      var e=EXTRA[k]; if(!e)return;
-      markers.forEach(function(m){var el=m.getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.remove('active');}});
-      xkeys.forEach(function(j){var el=xmarkers[j].getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.toggle('active',j===k);}});
-      active=-1;
-      if(cap)cap.innerHTML='<b>'+e.name+'</b><span>'+e.sub+'</span>';
-      var mapEl=document.getElementById('map'),r=mapEl.getBoundingClientRect();
-      var vis=r.top<window.innerHeight*0.9 && r.bottom>window.innerHeight*0.1;
-      function go(){map.invalidateSize();if(reduce)map.setView([e.lat,e.lng],e.zoom);else map.flyTo([e.lat,e.lng],e.zoom,{duration:0.9});}
-      if(vis){go();}else{var sc=document.getElementById('scrolly');if(sc)sc.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(go,reduce?0:560);}
-    }
+    // prose links fly the map to their point
     document.querySelectorAll('[data-flyto]').forEach(function(elm){
       elm.addEventListener('click',function(ev){ev.preventDefault();showExtra(elm.getAttribute('data-flyto'));});
     });
+    // optional stops with on-page content follow the scroll, just like the numbered stops
+    var xio=new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting)activateExtra(e.target.getAttribute('data-mapextra')); });
+    },{rootMargin:'-45% 0px -45% 0px',threshold:0});
+    document.querySelectorAll('[data-mapextra]').forEach(function(el){xio.observe(el);});
   })();
 </script>
 <script>
