@@ -146,6 +146,10 @@
     text-transform:uppercase;color:var(--bay);text-decoration:none;font-weight:600;}
   .altlink:hover{text-decoration:underline;}
   .altlink::after{content:"↗";}
+  .maplink{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;}
+  .maplink:hover{text-decoration-style:solid;}
+  .notes .maplink{color:#fff;}
+  .altcue{font-family:"Spline Sans Mono",monospace;font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--haze);margin-top:11px;}
   .chipalope{display:block;width:min(300px,72%);height:auto;margin:18px auto 0;}
   .aside-img{display:block;width:100%;height:clamp(180px,32vw,230px);object-fit:cover;
     object-position:center 32%;border-radius:9px;margin-bottom:13px;}
@@ -221,6 +225,10 @@
   .mk.d2.active{background:var(--bay);color:#fff;}
   .mk.d3{border-color:var(--redwood);color:var(--redwood);}
   .mk.d3.active{background:var(--redwood);color:#fff;}
+  .mk.alt{border-color:var(--bay);color:var(--bay);border-style:dashed;}
+  .mk.alt.active{background:var(--bay);color:#fff;border-style:solid;}
+  .mk.tip{border-color:#b8892f;color:#8a6420;}
+  .mk.tip.active{background:#b8892f;color:#fff;}
   @media (max-width:900px){
     .scrolly{grid-template-columns:1fr;gap:0;padding-top:32px;}
     .scrolly-body .leg + .leg{padding-top:40px;}
@@ -282,7 +290,7 @@
       <li><span>02</span><div><b>Dress in layers.</b> Summer is the cool, foggy season here — wind off the Pacific keeps the western neighborhoods chilly even in July. Locals call the fog Karl. Bring a jacket.</div></li>
       <li><span>03</span><div><b>Getting around.</b> Skip driving downtown — parking is scarce and pricey. Tap a phone or a Clipper card on Muni and BART; cable cars are a flat $8, exact cash or the MuniMobile app.</div></li>
       <li><span>04</span><div><b>Skip the Lombard queue.</b> Walk the pedestrian stairs beside the crooked block; the car line is slow and you see less from inside.</div></li>
-      <li><span>05</span><div><b>Swan Oyster Depot.</b> Lunch-only with a 2:30 close, cash only, and shut Sundays (optional, Day 2). Make it a priority or skip it.</div></li>
+      <li><span>05</span><div><b><button class="maplink" data-flyto="swan" type="button" title="Show on map">Swan Oyster Depot</button>.</b> Lunch-only with a 2:30 close, cash only, and shut Sundays (optional, Day 2). Make it a priority or skip it.</div></li>
       <li><span>06</span><div><b>The drive north.</b> The far-north redwoods are ~170 miles up the coast, so plan a night on the way. Short on time? Muir Woods, just over the Golden Gate, has the same giant redwoods a fifteenth of the distance away.</div></li>
     </ul>
   </div>
@@ -477,7 +485,12 @@
       <figcaption style="font-family:'Spline Sans Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--haze);margin-top:7px;">Inside a Muir Woods redwood · photo ©AREAD</figcaption>
     </figure>
     <span class="tag" style="color:var(--redwood);">Short on time? Stay close</span>
-    <p>You don't have to drive 170 miles to stand under giant redwoods. <a href="https://www.nps.gov/muwo/index.htm" target="_blank" rel="noopener">Muir Woods</a> is barely a fifteenth of the distance — just over the Golden Gate into Marin — and every bit as awe-inspiring, no $7.75-a-gallon fill-up required. And for raw coastline, <a href="https://www.google.com/maps/search/?api=1&amp;query=Jenner%2C+CA" target="_blank" rel="noopener">Jenner</a> — a small town up Highway 1 north of Muir Woods, where the Russian River meets the sea — is every bit as dramatic as Big Sur.</p>
+    <p>You don't have to drive 170 miles to stand under giant redwoods. <button class="maplink" data-flyto="muir" type="button">Muir Woods</button> is barely a fifteenth of the distance — just over the Golden Gate into Marin — and every bit as awe-inspiring, no $7.75-a-gallon fill-up required. And for raw coastline, <button class="maplink" data-flyto="jenner" type="button">Jenner</button> — a small town up Highway 1 where the Russian River meets the sea — is every bit as dramatic as Big Sur.</p>
+    <div class="altcue">Tap a place to trace the alternate route on the map</div>
+    <div class="card-links" style="margin-top:11px;">
+      <a class="altlink" href="https://www.nps.gov/muwo/index.htm" target="_blank" rel="noopener">Muir Woods info</a>
+      <a class="altlink" href="https://www.google.com/maps/search/?api=1&amp;query=Jenner%2C+CA" target="_blank" rel="noopener">Jenner</a>
+    </div>
   </div>
 
   <p class="daytag rv">Day 3 · Marin Coast</p>
@@ -603,6 +616,39 @@
       });
     },{rootMargin:'-45% 0px -45% 0px',threshold:0});
     cards.forEach(function(c){io.observe(c);});
+
+    // --- Extra, non-sequence points you can fly to from the prose ---
+    var EXTRA={
+      muir:{name:"Muir Woods",lat:37.8912,lng:-122.5719,zoom:12,cls:'alt',sub:'Stay-close alternative'},
+      jenner:{name:"Jenner",lat:38.4499,lng:-123.1138,zoom:11,cls:'alt',sub:'Stay-close alternative'},
+      swan:{name:"Swan Oyster Depot",lat:37.7917,lng:-122.4205,zoom:15,cls:'tip',sub:'Lunch tip · Day 2'}
+    };
+    // dashed line tracing the alternate route: bridge -> Muir Woods -> Jenner
+    L.polyline([[37.8077973,-122.4748473],[EXTRA.muir.lat,EXTRA.muir.lng],[EXTRA.jenner.lat,EXTRA.jenner.lng]],
+      {color:'#2C5D5C',weight:2,dashArray:'2 7',opacity:0.4}).addTo(map);
+    var xkeys=Object.keys(EXTRA), xmarkers={};
+    xkeys.forEach(function(k){
+      var e=EXTRA[k];
+      var mk=L.marker([e.lat,e.lng],{icon:L.divIcon({className:'mkico',
+        html:'<div class="mk '+e.cls+'">'+e.name.charAt(0)+'</div>',iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map);
+      mk.bindTooltip(e.name,{direction:'top',offset:[0,-12]});
+      var el=mk.getElement(); if(el){el.setAttribute('role','button');el.setAttribute('aria-label','Show '+e.name+' on the map');}
+      xmarkers[k]=mk;
+    });
+    function showExtra(k){
+      var e=EXTRA[k]; if(!e)return;
+      markers.forEach(function(m){var el=m.getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.remove('active');}});
+      xkeys.forEach(function(j){var el=xmarkers[j].getElement();if(el){var d=el.querySelector('.mk');if(d)d.classList.toggle('active',j===k);}});
+      active=-1;
+      if(cap)cap.innerHTML='<b>'+e.name+'</b><span>'+e.sub+'</span>';
+      var mapEl=document.getElementById('map'),r=mapEl.getBoundingClientRect();
+      var vis=r.top<window.innerHeight*0.9 && r.bottom>window.innerHeight*0.1;
+      function go(){map.invalidateSize();if(reduce)map.setView([e.lat,e.lng],e.zoom);else map.flyTo([e.lat,e.lng],e.zoom,{duration:0.9});}
+      if(vis){go();}else{var sc=document.getElementById('scrolly');if(sc)sc.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});setTimeout(go,reduce?0:560);}
+    }
+    document.querySelectorAll('[data-flyto]').forEach(function(elm){
+      elm.addEventListener('click',function(ev){ev.preventDefault();showExtra(elm.getAttribute('data-flyto'));});
+    });
   })();
 </script>
 <script>
