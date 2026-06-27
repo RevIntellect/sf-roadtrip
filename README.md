@@ -14,8 +14,8 @@ up the Marin coast and into redwood country.
   each with timing, neighborhood, notes, and an **Open in Maps** link.
 - **Field notes** and per-leg tips (biking the Presidio, the drive between the
   two northern stops, the Avenue of the Giants detour).
-- **Embedded photography** — all images are inlined as data URIs, so the page is
-  a single fully portable file.
+- **Local photography** — images live in `assets/` so the HTML stays small and
+  the browser can lazy-load media as visitors scroll.
 - **Responsive & accessible** — collapses to one column on mobile and respects
   `prefers-reduced-motion`.
 
@@ -29,14 +29,15 @@ python3 -m http.server 8000
 ```
 
 > An internet connection is needed for the Google Fonts, the Leaflet library,
-> and the OpenStreetMap map tiles. The page's own photos are embedded and load
-> offline.
+> and the OpenStreetMap map tiles. The page's own photos are local files and
+> load from `assets/`.
 
 ## Structure
 
-| File         | Purpose                                                  |
-| ------------ | -------------------------------------------------------- |
-| `index.html` | The entire site — markup, styles, images, and map script |
+| Path         | Purpose                                        |
+| ------------ | ---------------------------------------------- |
+| `index.html` | The page markup, styles, itinerary, and script |
+| `assets/`    | Local photography used by the itinerary cards  |
 
-The page is intentionally a single file so it can be dropped anywhere (static
-host, GitHub Pages, email attachment) and just work.
+The page is still a static site, but `index.html` and `assets/` should be kept
+together when moving or hosting it.
