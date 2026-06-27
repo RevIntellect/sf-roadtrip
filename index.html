@@ -218,6 +218,8 @@
   .mk.d2{border-color:var(--bay);color:var(--bay);}
   .mk.active{transform:scale(1.34);background:var(--bridge);color:#fff;}
   .mk.d2.active{background:var(--bay);color:#fff;}
+  .mk.d3{border-color:var(--redwood);color:var(--redwood);}
+  .mk.d3.active{background:var(--redwood);color:#fff;}
   @media (max-width:900px){
     .scrolly{grid-template-columns:1fr;gap:0;padding-top:32px;}
     .scrolly-body .leg + .leg{padding-top:40px;}
@@ -285,7 +287,7 @@
 <div class="scrolly wrap" id="scrolly">
   <aside class="scrolly-map">
     <div id="map"></div>
-    <div class="map-cap" id="mapcap"><b>The two city days, mapped</b><span>Scroll — the map follows each stop</span></div>
+    <div class="map-cap" id="mapcap"><b>The whole route, mapped</b><span>Scroll — the map follows each stop</span></div>
   </aside>
   <div class="scrolly-body">
 
@@ -457,10 +459,6 @@
 
 </section>
 
-  </div><!-- /scrolly-body -->
-</div><!-- /scrolly -->
-
-<!-- ROAD TRIP -->
 <div class="north">
 <section class="leg wrap">
   <div class="leg-head rv">
@@ -506,7 +504,7 @@
     </div>
     <div class="stop rv"><div class="rail"><div class="pin">3</div></div>
       <div class="card">
-        <img class="photo" src="https://assets.simpleviewinc.com/simpleview/image/upload/c_limit,h_1200,q_75,w_1200/v1/clients/eurekaca/02822c14_539a_4980_bbe9_b0269b6eb18a_83d28ed8-aec3-486d-bb2e-86991078b8a4.jpg" alt="A red VW camper van parked on the Avenue of the Giants, dwarfed by towering old-growth redwoods">
+        <img class="photo" src="assets/avenue-of-the-giants.jpg" alt="A red VW camper van parked on the Avenue of the Giants, dwarfed by towering old-growth redwoods">
         <div class="card-top"><h3>Avenue of the Giants</h3><span class="time">Afternoon</span><span class="hood">Humboldt · US-101</span></div>
         <p>A 31-mile scenic parkway through Humboldt Redwoods State Park, running alongside US-101 — the old-growth highlight of the whole trip, and free. Pull off at Founders Grove or the Rockefeller Forest to walk among the tallest of the coast redwoods. Easy to fold into the drive right around Confusion Hill.</p>
         <div class="card-links">
@@ -527,7 +525,8 @@
   </div>
 </section>
 </div>
-
+  </div><!-- /scrolly-body -->
+</div><!-- /scrolly -->
 <footer class="wrap">
   <p>San Francisco field guide · built for the road · tap any stop to open it in maps</p>
 </footer>
@@ -548,7 +547,10 @@
       {n:3,d:2,name:"Fisherman's Wharf",lat:37.8085771,lng:-122.4125282},
       {n:4,d:2,name:"Pier 39",lat:37.808673,lng:-122.409821},
       {n:5,d:2,name:"Mission Chinese Food",lat:37.7612,lng:-122.4195},
-      {n:6,d:2,name:"Mission Dolores Park",lat:37.7602015,lng:-122.4267959}
+      {n:6,d:2,name:"Mission Dolores Park",lat:37.7602015,lng:-122.4267959},
+      {n:1,d:3,name:"Stinson Beach",lat:37.9012,lng:-122.6443},
+      {n:2,d:4,name:"Confusion Hill",lat:39.7565,lng:-123.7896},
+      {n:3,d:4,name:"Avenue of the Giants",lat:40.3094,lng:-123.9211}
     ];
     var reduce=window.matchMedia('(prefers-reduced-motion:reduce)').matches;
     var map=L.map('map',{zoomControl:true,scrollWheelZoom:false});
@@ -556,7 +558,7 @@
       {maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(map);
     var markers=S.map(function(s){
       return L.marker([s.lat,s.lng],{icon:L.divIcon({
-        className:'mkico',html:'<div class="mk'+(s.d===2?' d2':'')+'">'+s.n+'</div>',
+        className:'mkico',html:'<div class="mk'+(s.d===2?' d2':s.d>=3?' d3':'')+'">'+s.n+'</div>',
         iconSize:[26,26],iconAnchor:[13,13]})}).addTo(map);
     });
     markers.forEach(function(m,i){
@@ -565,7 +567,7 @@
       el.setAttribute('role','button');
       el.setAttribute('aria-label','Show '+S[i].name+' on the itinerary');
     });
-    map.fitBounds(L.latLngBounds(S.map(function(s){return [s.lat,s.lng];})),{padding:[42,42]});
+    map.fitBounds(L.latLngBounds(S.filter(function(s){return s.d<=2;}).map(function(s){return [s.lat,s.lng];})),{padding:[42,42]});
     setTimeout(function(){map.invalidateSize();},250);
     window.addEventListener('resize',function(){map.invalidateSize();});
 
